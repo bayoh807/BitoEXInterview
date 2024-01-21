@@ -1,9 +1,12 @@
 package v1Controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"tinder-server/providders"
 	"tinder-server/resource/requests"
+	response "tinder-server/resource/responses"
 	"tinder-server/services"
 )
 
@@ -17,7 +20,7 @@ var (
 func (ctr *userController) AddSinglePersonAndMatch(c *gin.Context) {
 
 	var req requests.AddUserMatchRequest
-	resp := c.MustGet("response").(*providders.Response)
+	resp := c.MustGet("responses").(*providders.Response)
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		resp.Error = err
@@ -28,6 +31,8 @@ func (ctr *userController) AddSinglePersonAndMatch(c *gin.Context) {
 		if addPoolErr := services.UserService.AddMatchPool(user); addPoolErr != nil {
 			resp.Message = addPoolErr.Error()
 			return
+		} else {
+			resp.Data = response.UserResponse.NewResource(user)
 		}
 
 	}
@@ -35,7 +40,7 @@ func (ctr *userController) AddSinglePersonAndMatch(c *gin.Context) {
 
 func (ctr *userController) RemoveSinglePerson(c *gin.Context) {
 	var req requests.SingleUserRequest
-	resp := c.MustGet("response").(*providders.Response)
+	resp := c.MustGet("responses").(*providders.Response)
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		resp.Error = err
@@ -50,17 +55,20 @@ func (ctr *userController) RemoveSinglePerson(c *gin.Context) {
 }
 
 func (ctr *userController) QuerySinglePeople(c *gin.Context) {
-	var req requests.SingleUserRequest
-	resp := c.MustGet("response").(*providders.Response)
 
-	if err := c.ShouldBindJSON(&req); err != nil {
-		resp.Error = err
+	resp := c.MustGet("responses").(*providders.Response)
+	userID := c.Param("user_id")
+
+	if _, errGetUser := services.UserService.GetUser(userID); errGetUser != nil {
+		resp.Error = fmt.Errorf("not found")
+		resp.HttpCode = http.StatusNotFound
 		return
-	} else if user, errGetUser := services.UserService.GetUser(req.UserID); errGetUser != nil {
-		resp.Error = err
+	} else if user := services.UserService.GetUserFromMatchPool(userID); user == nil {
+
+		resp.Error = fmt.Errorf("not in the match")
 		return
 	} else {
-		services.UserService.RemoveMatchPool(user.ID)
+		resp.Data = services.UserService.GetMatch(user)
 		return
 	}
 }

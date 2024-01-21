@@ -12,7 +12,6 @@ type User struct {
 	Height uint64   `json:"height"`
 	Gender uint32   `json:"gender"`
 	Rule   UserRule `json:"rule"`
-	Times  uint64   `json:"times"`
 	Lock   sync.Mutex
 }
 
@@ -22,6 +21,7 @@ type UserRule struct {
 		End   uint64
 	}
 	MatchGender uint32
+	Times       uint64 `json:"times"`
 }
 
 func (d *dto) NewUser(req requests.AddUserMatchRequest) *User {
@@ -36,8 +36,8 @@ func (d *dto) NewUser(req requests.AddUserMatchRequest) *User {
 				Start uint64
 				End   uint64
 			}{Start: req.Rule.Range.Start, End: req.Rule.Range.End},
-			MatchGender: req.Rule.Gender,
+			MatchGender: *req.Rule.Gender,
+			Times:       req.Rule.Times,
 		},
-		Times: req.Times,
 	}
 }

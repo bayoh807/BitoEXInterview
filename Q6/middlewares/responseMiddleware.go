@@ -20,7 +20,7 @@ func (m *middleware) ResponseMiddleware(c *gin.Context) {
 		}
 	}()
 
-	c.Set("response", response)
+	c.Set("responses", response)
 	c.Next()
 
 }
@@ -31,7 +31,7 @@ func newSchemaResponse(resp *providders.Response) (int, map[string]interface{}) 
 		if resp.Error == nil {
 			return http.StatusOK, 0, "success"
 		} else {
-			return http.StatusBadRequest, 1, resp.Error.Error()
+			return http.StatusOK, 1, resp.Error.Error()
 		}
 	}()
 	res := map[string]interface{}{
