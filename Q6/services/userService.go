@@ -13,21 +13,22 @@ type userService struct {
 
 var (
 	UserService userService
-	matchPool   = map[string]dto.User{}
-	usersPool   = map[string]dto.User{}
+	MatchPool   = map[string]dto.User{}
+	UsersPool   = map[string]dto.User{}
 )
 
 func (s *userService) GetUser(key string) (*dto.User, error) {
 
-	if user, has := usersPool[key]; has {
+	if user, has := UsersPool[key]; has {
 		return &user, nil
 	} else {
 		return nil, fmt.Errorf("not found user")
 	}
 }
+
 func (s *userService) CrateUser(req requests.AddUserMatchRequest) *dto.User {
 	user := dto.Dto.NewUser(req)
-	usersPool[user.ID] = *user
+	UsersPool[user.ID] = *user
 
 	return user
 }
@@ -38,14 +39,14 @@ func (s *userService) AddMatchPool(user *dto.User) error {
 		return fmt.Errorf("current user's times is zero")
 	} else {
 		// add to match pool
-		matchPool[user.ID] = *user
+		MatchPool[user.ID] = *user
 		return nil
 
 	}
 }
 
 func (s *userService) GetUserFromMatchPool(key string) *dto.User {
-	if user, has := matchPool[key]; !has {
+	if user, has := MatchPool[key]; !has {
 		return nil
 	} else {
 		return &user
@@ -56,9 +57,9 @@ func (s *userService) GetMatch(user *dto.User) []interface{} {
 	var matchChan chan dto.User = make(chan dto.User)
 	matches := make([]interface{}, 0)
 	wg := sync.WaitGroup{}
-	wg.Add(len(matchPool))
+	wg.Add(len(MatchPool))
 
-	for _, item := range matchPool {
+	for _, item := range MatchPool {
 		go func(item dto.User) {
 			defer wg.Done() // 在 goroutine 完成时通知 WaitGroup
 			if matchUser := s.goMatch(user, &item); matchUser != nil {
@@ -98,14 +99,14 @@ func (s *userService) goMatch(currentUser *dto.User, item *dto.User) *dto.User {
 			s.RemoveMatchPool(item.ID)
 		} else {
 			item.Lock.Unlock()
-			matchPool[item.ID] = *item
+			MatchPool[item.ID] = *item
 		}
 
 		if currentUser.Rule.Times == 0 {
 			s.RemoveMatchPool(currentUser.ID)
 		} else {
 			currentUser.Lock.Unlock()
-			matchPool[currentUser.ID] = *currentUser
+			MatchPool[currentUser.ID] = *currentUser
 		}
 
 		return item
@@ -117,5 +118,5 @@ func (s *userService) goMatch(currentUser *dto.User, item *dto.User) *dto.User {
 
 func (s *userService) RemoveMatchPool(key string) {
 	//TODO : 這邊想確認移除時，如果已被配對到的情境
-	delete(matchPool, key)
+	delete(MatchPool, key)
 }

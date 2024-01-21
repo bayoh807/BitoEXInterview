@@ -20,6 +20,7 @@ clean:
 	go clean
 	rm -rf build/*
 
-
+test :
+	cd ./tests && go test
 .PHONY: build
 
