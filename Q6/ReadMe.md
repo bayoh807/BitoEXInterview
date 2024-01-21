@@ -13,3 +13,7 @@ make init_for_docker
 測試：
 make test
 
+
+TBD task:
+1. 使用validator套件,補充validate規則
+2. 製作sd 文件
