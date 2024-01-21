@@ -11,13 +11,8 @@ func (m *middleware) ResponseMiddleware(c *gin.Context) {
 	response := providders.Provider.NewResponse()
 
 	defer func() {
-		switch true {
-		case response.Data != nil, response.Error != nil:
-			code, res := newSchemaResponse(response)
-			c.JSON(code, res)
-		default:
-
-		}
+		code, res := newSchemaResponse(response)
+		c.JSON(code, res)
 	}()
 
 	c.Set("responses", response)
