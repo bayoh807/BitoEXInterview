@@ -53,6 +53,9 @@ func (s *userService) GetUserFromMatchPool(key string) *dto.User {
 	}
 }
 
+/**
+* 時間複雜度為 O(n)
+**/
 func (s *userService) GetMatch(user *dto.User) []interface{} {
 	var matchChan chan dto.User = make(chan dto.User)
 	matches := make([]interface{}, 0)
@@ -79,6 +82,9 @@ func (s *userService) GetMatch(user *dto.User) []interface{} {
 	return matches
 }
 
+/**
+* 時間複雜度為接近 O(1)
+**/
 func (s *userService) goMatch(currentUser *dto.User, item *dto.User) *dto.User {
 
 	if item.ID != currentUser.ID &&
