@@ -2,8 +2,8 @@ package main
 
 import (
 	_ "github.com/joho/godotenv/autoload"
-	"tinder-Server/routes"
-	_ "tinder-Server/routes"
+	"tinder-server/routes"
+	_ "tinder-server/routes"
 )
 
 func main() {

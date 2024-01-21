@@ -9,22 +9,10 @@ RUN apk add make; \
 RUN zip -r -0 /zoneinfo.zip /usr/share/zoneinfo
 RUN apk add --no-cache bash
 
-ARG CMD_NAME
-ARG GO_PATH
-ARG BUILD_VERSION
-
-ARG DB_USERNAME
-ARG DB_PASSWORD
-ARG DB_HOST
-ARG DB_NAME
-ARG ENV
-
-
 ENV WORK_HOME="app"
-ENV CMD_NAME=${CMD_NAME}
+ENV CMD_NAME="tinder-server"
 WORKDIR /$WORK_HOME
 COPY . /$WORK_HOME
-
 
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \
@@ -35,10 +23,10 @@ ENV GO111MODULE=on \
 RUN cd /$WORK_HOME && \
     make init build
 
-
 WORKDIR /dist
 
-RUN cp /$WORK_HOME/build/TEST main
+RUN cp /$WORK_HOME/build/main main
+
 
 
 # # Build a small image ===================================
@@ -50,11 +38,18 @@ COPY --from=builder /dist /
 ENV ZONEINFO /zoneinfo.zip
 COPY --from=builder /zoneinfo.zip /
 
-
+ARG DB_USERNAME
+ARG DB_PASSWORD
+ARG DB_HOST
+ARG DB_NAME
 ARG ENV
 ARG COMMIT_ID
 ARG BUILD_VERSION
 
+ENV DB_USERNAME="${DB_USERNAME}"
+ENV DB_PASSWORD="${DB_PASSWORD}"
+ENV DB_HOST="${DB_HOST}"
+ENV DB_NAME="${DB_NAME}"
 ENV ENV="${ENV}"
 ENV VERSION="${BUILD_VERSION}"
 ENV COMMIT_ID="${COMMIT_ID}"

@@ -3,9 +3,9 @@ package routes
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"tinder-Server/middlewares"
-	"tinder-Server/providders"
-	"tinder-Server/routes/v1Router"
+	"tinder-server/middlewares"
+	"tinder-server/providders"
+	"tinder-server/routes/v1Router"
 )
 
 type Command struct {

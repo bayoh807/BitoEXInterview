@@ -3,7 +3,7 @@ package middlewares
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"tinder-Server/providders"
+	"tinder-server/providders"
 )
 
 func (m *middleware) ResponseMiddleware(c *gin.Context) {
