@@ -15,6 +15,6 @@ const (
 
 func (r *v1Router) InitRouter(rootG *gin.RouterGroup) {
 
-	//r.unAuthGroup(rootG)
+	r.authGroup(rootG)
 
 }

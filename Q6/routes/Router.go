@@ -52,6 +52,7 @@ func (r *routerStruct) Run() {
 			middlewares.Middleware.CORSMiddleware,
 			middlewares.Middleware.DebugMiddleware,
 			middlewares.Middleware.RequestMiddleware,
+			middlewares.Middleware.ResponseMiddleware,
 		)
 		rootV1 := router.Group("/")
 		{
